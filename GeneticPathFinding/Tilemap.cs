@@ -27,11 +27,20 @@ namespace GeneticPathFinding
         public static Tilemap Load(Stream stream)
         {
             // [G]enetic[P]ath[F]inding[M]ap
-            const int GPFM = 1203747823;
+            Span<byte> bom = stackalloc byte[] { 0xEF, 0xBB, 0xBF };
+
             // 매직 넘버 판정
-            var binaryReader = new BinaryReader(stream);
-            //var test = binaryReader.ReadInt32();
-            if (binaryReader.ReadInt32() == GPFM)
+            Span<byte> buffer = stackalloc byte[4];
+            stream.Read(buffer);
+            // UTF-8 BOM 처리
+            if (buffer.Slice(0, 3).SequenceEqual(bom))
+            {
+                stream.Position--;
+                stream.Read(buffer);
+            }
+
+            Span<byte> GPFM = stackalloc byte[] { 0x47, 0x50, 0x46, 0x4D };
+            if (buffer.SequenceEqual(GPFM))
             {
                 var textReader = new StreamReader(stream);
                 textReader.ReadLine(); // 개행
@@ -69,12 +78,17 @@ namespace GeneticPathFinding
 
         private static TilemapData GetTilemapData(char mapCharacter)
         {
-            return mapCharacter switch
+            switch (mapCharacter)
             {
-                '#' => TilemapData.Wall,
-                '@' => TilemapData.Object,
-                _ => TilemapData.Blank,
-            };
+                default:
+                    return TilemapData.Blank;
+                case '#':
+                case '＃':
+                    return TilemapData.Wall;
+                case '@':
+                case '＠':
+                    return TilemapData.Object;
+            }
         }
 
         public Tilemap(int xSize, int ySize)
@@ -107,26 +121,32 @@ namespace GeneticPathFinding
         {
             if (fullWidth)
             {
-                return tilemapData switch
+                switch (tilemapData)
                 {
-                    TilemapData.Wall => '＃',
-                    TilemapData.Object => '＠',
-                    _ => '．',
-                };
+                    default:
+                        return '．';
+                    case TilemapData.Wall:
+                        return '＃';
+                    case TilemapData.Object:
+                        return '＠';
+                }
             }
             else
             {
-                return tilemapData switch
+                switch (tilemapData)
                 {
-                    TilemapData.Wall => '#',
-                    TilemapData.Object => '@',
-                    _ => '.',
-                };
+                    default:
+                        return '.';
+                    case TilemapData.Wall:
+                        return '#';
+                    case TilemapData.Object:
+                        return '@';
+                }
             }
         }
     }
 
-    enum TilemapData
+    enum TilemapData : byte
     {
         Blank,
         Wall,
