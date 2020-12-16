@@ -4,7 +4,7 @@ using System.Text;
 
 namespace GeneticPathFinding
 {
-    enum Direction
+    enum Direction : byte
     {
         Up,
         Right,

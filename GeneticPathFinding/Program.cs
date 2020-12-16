@@ -7,6 +7,7 @@ namespace GeneticPathFinding
 {
     class Program
     {
+        public static Random Random { get; } = new Random();
         public static string Name
         {
             get
