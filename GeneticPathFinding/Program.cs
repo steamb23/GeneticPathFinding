@@ -25,24 +25,49 @@ namespace GeneticPathFinding
             Console.WriteLine("청강문화산업대학교 201613018 최지헌, 2020-12");
             Console.WriteLine();
             Console.WriteLine("타일맵 테스트");
-
-            Console.WriteLine(Tilemap.Load("Tilemap.txt").ToMapString(true));
-            Console.Write("생각중...");
-            for (int i = 0; i < 1000; i++)
+            var tilemap = Tilemap.Load("Tilemap.txt");
+            Console.WriteLine(tilemap.ToMapString(true));
+            Console.WriteLine();
+            Console.WriteLine("패스파인딩맵 테스트");
+            var pathFindingMap = new PathFindingMap(tilemap, new Point(1,1));
+            pathFindingMap.Path = new System.Collections.Generic.List<Direction>()
             {
-                Console.Write('|');
-                Thread.Sleep(100);
-                Console.CursorLeft -= 1;
-                Console.Write('/');
-                Thread.Sleep(100);
-                Console.CursorLeft -= 1;
-                Console.Write('-');
-                Thread.Sleep(100);
-                Console.CursorLeft -= 1;
-                Console.Write('\\');
-                Thread.Sleep(100);
-                Console.CursorLeft -= 1;
-            }
+                Direction.Right,
+                Direction.Right,
+                Direction.Right,
+                Direction.Right,
+                Direction.Down,
+                Direction.Right,
+                Direction.Right,
+                Direction.Right,
+                Direction.Right,
+                Direction.Right,
+                Direction.Right,
+                Direction.Right,
+                Direction.Down,
+                Direction.Up,
+            };
+            Console.WriteLine(pathFindingMap.ToMapString(true));
+
+
+
+
+            //Console.Write("생각중...");
+            //for (int i = 0; i < 1000; i++)
+            //{
+            //    Console.Write('|');
+            //    Thread.Sleep(100);
+            //    Console.CursorLeft -= 1;
+            //    Console.Write('/');
+            //    Thread.Sleep(100);
+            //    Console.CursorLeft -= 1;
+            //    Console.Write('-');
+            //    Thread.Sleep(100);
+            //    Console.CursorLeft -= 1;
+            //    Console.Write('\\');
+            //    Thread.Sleep(100);
+            //    Console.CursorLeft -= 1;
+            //}
         }
     }
 }

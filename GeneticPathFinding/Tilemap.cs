@@ -93,23 +93,24 @@ namespace GeneticPathFinding
 
         public Tilemap(int xSize, int ySize)
         {
-            tilemapDatas = new TilemapData[xSize, ySize];
+            tilemapDatas = new TilemapData[ySize, xSize];
         }
 
-        public int XSize => tilemapDatas.GetLength(0);
-        public int YSize => tilemapDatas.GetLength(1);
+        public int XSize => tilemapDatas.GetLength(1);
+        public int YSize => tilemapDatas.GetLength(0);
 
-        public TilemapData GetData(int x, int y) => tilemapDatas[x, y];
-        public void SetData(int x, int y, TilemapData value) => tilemapDatas[x, y] = value;
+        public TilemapData GetData(int x, int y) => tilemapDatas[y, x];
+        public TilemapData GetData(Point point) => GetData(point.x, point.y);
+        public void SetData(int x, int y, TilemapData value) => tilemapDatas[y, x] = value;
 
-        public string ToMapString(bool fullWidth = false)
+        public virtual string ToMapString(bool fullWidth = false)
         {
             StringBuilder stringBuilder = new StringBuilder();
             for (int y = 0; y < YSize; y++)
             {
                 for (int x = 0; x < XSize; x++)
                 {
-                    stringBuilder.Append(TilemapDataToCharacter(tilemapDatas[x, y], fullWidth));
+                    stringBuilder.Append(TilemapDataToCharacter(tilemapDatas[y, x], fullWidth));
                 }
                 stringBuilder.AppendLine();
             }
