@@ -84,5 +84,12 @@ namespace GeneticPathFinding
             }
         }
 
+        public Chromosome Clone()
+        {
+            var newArray = new Direction[Datas.Length];
+            Array.Copy(Datas, newArray, Datas.Length);
+
+            return new Chromosome(newArray);
+        }
     }
 }
