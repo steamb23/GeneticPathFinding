@@ -11,11 +11,22 @@ namespace GeneticPathFinding
     {
         public PathFinderPopulation Population { get; private set; }
 
-        public PathFindingMap Map
+        public Tilemap Tilemap
         {
             get;
             set;
         }
+        public Point StartPoint
+        {
+            get;
+            set;
+        }
+        public Point EndPoint
+        {
+            get;
+            set;
+        }
+
         public int PopulationSize
         {
             get;
@@ -41,7 +52,7 @@ namespace GeneticPathFinding
         {
             return new PathFinderDescription()
             {
-                Tilemap = Map,
+                PathFindingMap = new PathFindingMap(Tilemap, StartPoint, EndPoint),
                 PopulationSize = PopulationSize,
                 ChromosomeSize = ChromosomeSize,
                 CrossoverRate = CrossoverRate,
@@ -49,9 +60,9 @@ namespace GeneticPathFinding
             };
         }
 
-        public PathFinder(PathFindingMap pathFindingMap)
+        public PathFinder(Tilemap tilemap)
         {
-            Map = pathFindingMap;
+            Tilemap = tilemap;
         }
 
         // Population 재생성 및 리셋 절차

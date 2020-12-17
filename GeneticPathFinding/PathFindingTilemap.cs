@@ -6,33 +6,27 @@ namespace GeneticPathFinding
 {
     class PathFindingMap
     {
-        Tilemap baseTilemap;
-        List<Direction> path;
 
-        Point startPoint;
-
-        public PathFindingMap(Tilemap baseTilemap, Point startPoint = default)
+        public PathFindingMap(Tilemap baseTilemap, Point startPoint = default, Point endPoint = default)
         {
-            this.baseTilemap = baseTilemap;
-            this.startPoint = startPoint;
+            this.BaseTilemap = baseTilemap;
+            this.StartPoint = startPoint;
+            this.EndPoint = endPoint;
         }
 
-        public List<Direction> Path
-        {
-            get => this.path;
-            set => this.path = value;
-        }
+        public List<Direction> Path { get; set; } = new List<Direction>();
 
-        public Point StartPoint => startPoint;
+        public Point StartPoint { get; }
+        public Point EndPoint { get; }
 
-        public Tilemap BaseTilemap => baseTilemap;
+        public Tilemap BaseTilemap { get; }
 
         public List<Point> GetRoute()
         {
-            Point currentPoint = startPoint;
+            Point currentPoint = StartPoint;
             List<Point> route = new List<Point>();
             // build route
-            foreach (var direction in path)
+            foreach (var direction in Path)
             {
                 route.Add(currentPoint);
 
@@ -54,11 +48,17 @@ namespace GeneticPathFinding
                 }
 
                 // 다음 위치가 빈 공간이면 그 위치로 이동
-                if (baseTilemap.GetData(nextPoint) == TilemapData.Blank &&
-                    nextPoint.x > 0 && nextPoint.x < baseTilemap.XSize &&
-                    nextPoint.y > 0 && nextPoint.y < baseTilemap.YSize)
+                if (BaseTilemap.GetData(nextPoint) == TilemapData.Blank &&
+                    nextPoint.x > 0 && nextPoint.x < BaseTilemap.XSize &&
+                    nextPoint.y > 0 && nextPoint.y < BaseTilemap.YSize)
                 {
                     currentPoint = nextPoint;
+                }
+
+                // 이동한 위치가 끝지점이면 경로 빌드 종료.
+                if(currentPoint == EndPoint)
+                {
+                    break;
                 }
             }
             // 최종 위치
@@ -72,11 +72,11 @@ namespace GeneticPathFinding
             var route = GetRoute();
 
             // 원본 문자열 가져오기
-            var originMapString = baseTilemap.ToMapString(fullWidth);
+            var originMapString = BaseTilemap.ToMapString(fullWidth);
             // 문자열 자르기
             var splitedMapString = originMapString.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            char[,] mapChars = new char[baseTilemap.YSize, baseTilemap.XSize];
+            char[,] mapChars = new char[BaseTilemap.YSize, BaseTilemap.XSize];
             for (int y = 0; y < splitedMapString.Length; y++)
             {
                 var currentLine = splitedMapString[y];
@@ -103,6 +103,15 @@ namespace GeneticPathFinding
             }
 
             return stringBuilder.ToString();
+        }
+
+        public PathFindingMap Clone()
+        {
+            var clone = (PathFindingMap)MemberwiseClone();
+
+            clone.Path = new List<Direction>();
+
+            return clone;
         }
     }
 }

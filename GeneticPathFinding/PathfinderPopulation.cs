@@ -9,7 +9,7 @@ namespace GeneticPathFinding
 {
     struct PathFinderDescription
     {
-        public PathFindingMap Tilemap
+        public PathFindingMap PathFindingMap
         {
             get;
             set;
@@ -143,12 +143,18 @@ namespace GeneticPathFinding
                             }
                             // 변이
                             chromosomes[i].Mutate(description.MutationRate);
+
+                            // 평가
+                            /*
+                             * 고려해야할 사항:
+                             * 라우트의 길이
+                             * 라우트 끝점과 목적지간의 거리
+                             */
+
                         }
                     }
                     Generation += 1;
 
-                    // 현재 세대 평가
-                    Evaluate();
 
                     // 비상 정지
                     if (isEmergencyStop)
@@ -185,11 +191,6 @@ namespace GeneticPathFinding
             // 비상용
             //return oldChromosomes[^0];
             return null;
-        }
-
-        void Evaluate()
-        {
-            
         }
     }
 }
