@@ -49,6 +49,9 @@ namespace GeneticPathFinding
             private set;
         }
 
+        public Chromosome BestChromosome { get; private set; }
+        public double BestFitness { get; private set; }
+
         public ReadOnlyCollection<Chromosome> Chromosomes => Array.AsReadOnly(chromosomes);
         public Chromosome[] chromosomes;
 
@@ -121,40 +124,55 @@ namespace GeneticPathFinding
         {
             await Task.Run(() =>
             {
-                isEmergencyStop = false;
+                this.isEmergencyStop = false;
 
                 var description = Description;
                 while (nextGeneration != 0)
                 {
-                    // 세대 교체
-                    // 현재 세대가 시조 세대이면 세대 교체 일어나지 않음.
-                    if (Generation > 0)
+                    lock (description.PathFindingMap)
                     {
-                        double fitnessCumulative = 0;
-                        // 구세대 복사
-                        Array.Copy(chromosomes, oldChromosomes, description.PopulationSize);
-                        for (int i = 0; i < description.PopulationSize; i++)
+                        // 세대 교체
+                        // 현재 세대가 시조 세대이면 세대 교체 일어나지 않음.
+                        if (Generation > 0)
                         {
-                            // 선택
-                            chromosomes[i] = Select();
-                            // 교배
-                            if (Program.Random.NextDouble() < description.CrossoverRate)
+                            double fitnessCumulative = 0;
+                            this.BestFitness = 0;
+                            // 구세대 복사
+                            Array.Copy(this.chromosomes, this.oldChromosomes, description.PopulationSize);
+                            for (int i = 0; i < description.PopulationSize; i++)
                             {
-                                chromosomes[i].Crossover(Select());
-                            }
-                            // 변이
-                            chromosomes[i].Mutate(description.MutationRate);
+                                // 선택
+                                var chromosome = this.chromosomes[i] = Select().Clone();
+                                // 교배
+                                if (Program.Random.NextDouble() < description.CrossoverRate)
+                                {
+                                    chromosome.Crossover(Select());
+                                }
+                                // 변이
+                                chromosome.Mutate(description.MutationRate);
 
-                            // 평가
-                            fitnesses[i] = chromosomes[i].Evaluate(description.PathFindingMap);
-                            fitnessCumulatives[i] = fitnessCumulative += fitnesses[i];
+                                // 평가
+                                var fitness = this.fitnesses[i] = chromosome.Evaluate(description.PathFindingMap);
+                                this.fitnessCumulatives[i] = fitnessCumulative += fitness;
+
+                                // 베스트 염색체 선정
+                                if (fitness > this.BestFitness)
+                                {
+                                    this.BestFitness = fitness;
+                                    this.BestChromosome = chromosome;
+                                }
+                            }
                         }
+
+                        // 결과 반영
+                        description.PathFindingMap.Path.Clear();
+                        description.PathFindingMap.Path.AddRange(BestChromosome.Datas);
+                        Generation += 1;
                     }
-                    Generation += 1;
 
 
                     // 비상 정지
-                    if (isEmergencyStop)
+                    if (this.isEmergencyStop)
                     {
                         break;
                     }
