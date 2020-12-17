@@ -145,11 +145,6 @@ namespace GeneticPathFinding
                             chromosomes[i].Mutate(description.MutationRate);
 
                             // 평가
-                            /*
-                             * 고려해야할 사항:
-                             * 라우트의 길이
-                             * 라우트 끝점과 목적지간의 거리
-                             */
 
                         }
                     }

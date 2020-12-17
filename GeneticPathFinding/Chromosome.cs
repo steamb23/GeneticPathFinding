@@ -50,6 +50,30 @@ namespace GeneticPathFinding
             }
         }
 
+        public double Evaluate(PathFindingMap pathFindingMap)
+        {
+            /*
+             * 고려해야할 사항:
+             * 1. 라우트 끝점과 목적지간의 거리
+             * 2. 라우트의 길이
+             */
+
+            // 경로 빌드
+            var route = PathFindingMap.GetRoute(
+                pathFindingMap.BaseTilemap,
+                pathFindingMap.StartPoint,
+                pathFindingMap.TargetPoint,
+                Datas);
+
+            var length = route.Count;
+            var endPointDistance = Point.GetManhattanDistance(route[^0], pathFindingMap.TargetPoint);
+
+            double fitness = 1 / endPointDistance + 1;
+            fitness *= length;
+
+            return fitness;
+        }
+
         public void Reset()
         {
             var length = Datas.Length;

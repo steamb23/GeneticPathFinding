@@ -7,26 +7,26 @@ namespace GeneticPathFinding
     class PathFindingMap
     {
 
-        public PathFindingMap(Tilemap baseTilemap, Point startPoint = default, Point endPoint = default)
+        public PathFindingMap(Tilemap baseTilemap, Point startPoint = default, Point targetPoint = default)
         {
             this.BaseTilemap = baseTilemap;
             this.StartPoint = startPoint;
-            this.EndPoint = endPoint;
+            this.TargetPoint = targetPoint;
         }
 
         public List<Direction> Path { get; set; } = new List<Direction>();
 
         public Point StartPoint { get; }
-        public Point EndPoint { get; }
+        public Point TargetPoint { get; }
 
         public Tilemap BaseTilemap { get; }
 
-        public List<Point> GetRoute()
+        public static List<Point> GetRoute(Tilemap tilemap, Point startPoint, Point targetPoint, params Direction[] path)
         {
-            Point currentPoint = StartPoint;
+            Point currentPoint = startPoint;
             List<Point> route = new List<Point>();
             // build route
-            foreach (var direction in Path)
+            foreach (var direction in path)
             {
                 route.Add(currentPoint);
 
@@ -48,15 +48,15 @@ namespace GeneticPathFinding
                 }
 
                 // 다음 위치가 빈 공간이면 그 위치로 이동
-                if (BaseTilemap.GetData(nextPoint) == TilemapData.Blank &&
-                    nextPoint.x > 0 && nextPoint.x < BaseTilemap.XSize &&
-                    nextPoint.y > 0 && nextPoint.y < BaseTilemap.YSize)
+                if (tilemap.GetData(nextPoint) == TilemapData.Blank &&
+                    nextPoint.x > 0 && nextPoint.x < tilemap.XSize &&
+                    nextPoint.y > 0 && nextPoint.y < tilemap.YSize)
                 {
                     currentPoint = nextPoint;
                 }
 
                 // 이동한 위치가 끝지점이면 경로 빌드 종료.
-                if(currentPoint == EndPoint)
+                if(currentPoint == targetPoint)
                 {
                     break;
                 }
@@ -69,7 +69,7 @@ namespace GeneticPathFinding
 
         public string ToMapString(bool fullWidth = false)
         {
-            var route = GetRoute();
+            var route = GetRoute(BaseTilemap, StartPoint, TargetPoint, Path.ToArray());
 
             // 원본 문자열 가져오기
             var originMapString = BaseTilemap.ToMapString(fullWidth);
