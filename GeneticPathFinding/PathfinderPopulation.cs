@@ -7,9 +7,9 @@ using TerraText;
 
 namespace GeneticPathFinding
 {
-    struct PathfinderDescription
+    struct PathFinderDescription
     {
-        public Tilemap Tilemap
+        public PathFindingMap Tilemap
         {
             get;
             set;
@@ -35,9 +35,9 @@ namespace GeneticPathFinding
             set;
         }
     }
-    class PathfinderPopulation
+    class PathFinderPopulation
     {
-        public PathfinderDescription Description
+        public PathFinderDescription Description
         {
             get;
             private set;
@@ -56,12 +56,12 @@ namespace GeneticPathFinding
         public double[] fitnessRates;
         public double[] fitnessRateCumulatives;
 
-        public PathfinderPopulation(PathfinderDescription description)
+        public PathFinderPopulation(PathFinderDescription description)
         {
             Reset(description);
         }
 
-        public void Reset(PathfinderDescription description)
+        public void Reset(PathFinderDescription description)
         {
             Description = description;
             // null 염색체 시작점
@@ -121,6 +121,8 @@ namespace GeneticPathFinding
         {
             await Task.Run(() =>
             {
+                isEmergencyStop = false;
+
                 var description = Description;
                 while (nextGeneration != 0)
                 {
@@ -187,7 +189,7 @@ namespace GeneticPathFinding
 
         void Evaluate()
         {
-
+            
         }
     }
 }

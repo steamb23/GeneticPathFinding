@@ -7,11 +7,11 @@ namespace GeneticPathFinding
     /// <summary>
     /// PathfinderPopulation의 팩토리/래퍼 클래스
     /// </summary>
-    class Pathfinder
+    class PathFinder
     {
-        public PathfinderPopulation Population { get; private set; }
+        public PathFinderPopulation Population { get; private set; }
 
-        public Tilemap Tilemap
+        public PathFindingMap Map
         {
             get;
             set;
@@ -37,11 +37,11 @@ namespace GeneticPathFinding
             set;
         } = 0.01;
 
-        public PathfinderDescription GetDescription()
+        public PathFinderDescription GetDescription()
         {
-            return new PathfinderDescription()
+            return new PathFinderDescription()
             {
-                Tilemap = Tilemap,
+                Tilemap = Map,
                 PopulationSize = PopulationSize,
                 ChromosomeSize = ChromosomeSize,
                 CrossoverRate = CrossoverRate,
@@ -49,15 +49,15 @@ namespace GeneticPathFinding
             };
         }
 
-        public Pathfinder(Tilemap tilemap)
+        public PathFinder(PathFindingMap pathFindingMap)
         {
-            Tilemap = tilemap;
+            Map = pathFindingMap;
         }
 
         // Population 재생성 및 리셋 절차
         public void Initialize()
         {
-            Population = new PathfinderPopulation(GetDescription());
+            Population = new PathFinderPopulation(GetDescription());
         }
 
         // 데이터 초기화
