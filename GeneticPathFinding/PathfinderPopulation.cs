@@ -53,8 +53,8 @@ namespace GeneticPathFinding
         public Chromosome[] chromosomes;
 
         public Chromosome[] oldChromosomes;
-        public double[] fitnessRates;
-        public double[] fitnessRateCumulatives;
+        public double[] fitnesses;
+        public double[] fitnessCumulatives;
 
         public PathFinderPopulation(PathFinderDescription description)
         {
@@ -96,8 +96,8 @@ namespace GeneticPathFinding
             {
                 // 각 데이터 배열 재할당
                 oldChromosomes = new Chromosome[description.PopulationSize];
-                fitnessRates = new double[description.PopulationSize];
-                fitnessRateCumulatives = new double[description.PopulationSize];
+                fitnesses = new double[description.PopulationSize];
+                fitnessCumulatives = new double[description.PopulationSize];
             }
         }
 
@@ -108,7 +108,7 @@ namespace GeneticPathFinding
             for (int i = 0; i < description.PopulationSize; i++)
             {
                 chromosomes[i].Reset();
-                fitnessRates[i] = 0;
+                fitnesses[i] = 0;
             }
         }
 
@@ -130,6 +130,7 @@ namespace GeneticPathFinding
                     // 현재 세대가 시조 세대이면 세대 교체 일어나지 않음.
                     if (Generation > 0)
                     {
+                        double fitnessCumulative = 0;
                         // 구세대 복사
                         Array.Copy(chromosomes, oldChromosomes, description.PopulationSize);
                         for (int i = 0; i < description.PopulationSize; i++)
@@ -145,7 +146,8 @@ namespace GeneticPathFinding
                             chromosomes[i].Mutate(description.MutationRate);
 
                             // 평가
-
+                            fitnesses[i] = chromosomes[i].Evaluate(description.PathFindingMap);
+                            fitnessCumulatives[i] = fitnessCumulative += fitnesses[i];
                         }
                     }
                     Generation += 1;
@@ -171,13 +173,13 @@ namespace GeneticPathFinding
         Chromosome Select()
         {
             // 룰렛휠 선택
-            var totalFitnessRate = fitnessRateCumulatives[^0];
+            var totalFitnessRate = fitnessCumulatives[^0];
 
             var rouletRate = Program.Random.NextDouble() * totalFitnessRate;
-            var length = fitnessRateCumulatives.Length;
+            var length = fitnessCumulatives.Length;
             for (int i = 0; i < length - 1; i++)
             {
-                if (rouletRate > fitnessRateCumulatives[i] && rouletRate < fitnessRateCumulatives[i + 1])
+                if (rouletRate > fitnessCumulatives[i] && rouletRate < fitnessCumulatives[i + 1])
                 {
                     return oldChromosomes[i];
                 }
